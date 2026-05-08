@@ -1,373 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Home - Classroom</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --primary: #1a73e8;
-      --primary-dark: #1558aa;
-      --bg: #f5f5f5;
-      --card-bg: #ffffff;
-      --danger: #d93025;
-      --muted: #777;
-      --success: #188038;
-      --border: #ddd;
-      --console-bg: #111;
-      --console-text: #e5e5e5;
-      --console-accent: #4caf50;
-    }
-    * { box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    body { background:var(--bg); color:#202124; padding-top:72px; }
-    header { position:fixed; top:0; left:0; right:0; height:72px; background:#fff; border-bottom:1px solid #e0e0e0; display:flex; align-items:center; padding:0 24px; z-index:1000; }
-    .header-logo { width:32px; height:32px; border-radius:8px; background:#1a73e8; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; margin-right:12px; font-size:18px; }
-    .header-text { display:flex; flex-direction:column; }
-    .header-title { font-size:18px; font-weight:500; }
-    .header-subtitle { font-size:12px; color:var(--muted); }
-    main { max-width:1100px; margin:24px auto 40px; padding:0 16px; }
-    .page-title { font-size:24px; font-weight:500; margin-bottom:8px; }
-    .page-subtitle { font-size:14px; color:var(--muted); margin-bottom:24px; }
-    .card { background:var(--card-bg); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.08); padding:20px 20px 16px; margin-bottom:20px; }
-    .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    .card-title { font-size:18px; font-weight:500; }
-    .card-subtitle { font-size:13px; color:var(--muted); }
-    .btn { border:none; border-radius:999px; padding:8px 18px; font-size:14px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; transition:background .15s,box-shadow .15s,transform .05s; white-space:nowrap; }
-    .btn-primary { background:var(--primary); color:#fff; box-shadow:0 1px 2px rgba(0,0,0,.15); }
-    .btn-primary:hover { background:var(--primary-dark); }
-    .btn-outline { background:#fff; color:var(--primary); border:1px solid var(--primary); }
-    .btn-ghost { background:transparent; color:var(--muted); }
-    .btn-danger { background:var(--danger); color:#fff; }
-    .btn-success { background:var(--success); color:#fff; }
-    .btn:disabled { opacity:.45; cursor:default; box-shadow:none; transform:none; }
-    .btn:active:not(:disabled) { transform:translateY(1px); box-shadow:0 0 0 rgba(0,0,0,.1); }
-    .empty-state { text-align:center; padding:40px 16px 32px; color:var(--muted); }
-    .empty-state h2 { font-size:20px; margin-bottom:8px; color:#202124; }
-    .empty-state p { font-size:14px; margin-bottom:16px; }
-    .servers-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-    .server-card { border-radius:12px; border:1px solid var(--border); padding:14px 14px 12px; display:flex; flex-direction:column; gap:8px; }
-    .server-name { font-weight:600; font-size:16px; }
-    .server-address { font-size:13px; color:var(--muted); }
-    .server-meta { font-size:12px; color:var(--muted); }
-    .server-actions { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
-    .badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:11px; background:#e8f0fe; color:#1a73e8; gap:4px; }
-    .badge-dot { width:7px; height:7px; border-radius:50%; background:#1a73e8; }
-    .badge-danger { background:#fce8e6; color:#d93025; }
-    .badge-danger .badge-dot { background:#d93025; }
-    .badge-success { background:#e6f4ea; color:#188038; }
-    .badge-success .badge-dot { background:#188038; }
-    .wizard-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:1200; }
-    .wizard { width:100%; max-width:640px; max-height:90vh; overflow:hidden; background:#fff; border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,.25); display:flex; flex-direction:column; }
-    .wizard-header { padding:18px 22px 10px; border-bottom:1px solid #eee; }
-    .wizard-title { font-size:18px; font-weight:500; margin-bottom:4px; }
-    .wizard-subtitle { font-size:13px; color:var(--muted); }
-    .wizard-steps { display:flex; gap:8px; padding:10px 22px 0; margin-bottom:4px; }
-    .wizard-step { flex:1; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); display:flex; align-items:center; gap:6px; }
-    .wizard-step-indicator { width:18px; height:18px; border-radius:50%; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; background:#fafafa; }
-    .wizard-step.active .wizard-step-indicator { border-color:var(--primary); background:#e8f0fe; color:var(--primary); }
-    .wizard-step.active { color:#202124; }
-    .wizard-body { padding:18px 22px 16px; overflow-y:auto; }
-    .wizard-footer { padding:10px 22px 14px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .field { margin-bottom:14px; }
-    .field label { display:block; font-size:13px; margin-bottom:4px; font-weight:500; }
-    .field small { display:block; font-size:11px; color:var(--muted); margin-top:2px; }
-    .input-row { display:flex; align-items:stretch; gap:0; margin-top:4px; }
-    .input-prefix,.input-suffix { padding:8px 10px; background:#f1f3f4; font-size:13px; color:#5f6368; white-space:nowrap; border:1px solid #dadce0; }
-    .input-prefix { border-radius:8px 0 0 8px; border-right:none; }
-    .input-suffix { border-radius:0 8px 8px 0; border-left:none; }
-    input[type="text"] { border-radius:0; border:1px solid #dadce0; padding:8px 10px; font-size:13px; outline:none; min-width:0; }
-    input[type="text"]:focus { border-color:var(--primary); box-shadow:0 0 0 1px rgba(26,115,232,.15); }
-    .error-text { font-size:11px; color:var(--danger); margin-top:4px; }
-    .version-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-top:8px; }
-    .version-card { border-radius:10px; border:1px solid var(--border); padding:10px 10px 8px; cursor:default; background:#fafafa; opacity:.5; position:relative; }
-    .version-card.enabled { cursor:pointer; background:#fff; opacity:1; }
-    .version-card.selected { border-color:var(--primary); box-shadow:0 0 0 1px rgba(26,115,232,.2); }
-    .version-name { font-size:14px; font-weight:500; margin-bottom:4px; }
-    .version-desc { font-size:12px; color:var(--muted); }
-    .version-tag { position:absolute; top:8px; right:8px; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
-    .version-tag-primary { color:var(--primary); }
-    .motd-layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1.6fr); gap:16px; margin-top:8px; }
-    @media (max-width:720px){ .motd-layout{grid-template-columns:1fr;} }
-    .motd-preview-card { background:#0f0f0f; border-radius:10px; padding:10px 12px; color:#e5e5e5; font-family:monospace; font-size:12px; border:1px solid #333; }
-    .motd-line-address { color:#55ffff; margin-bottom:2px; }
-    .motd-line-title { color:#ffff55; margin-bottom:2px; }
-    .motd-line-footer { color:#aaaaaa; }
-    .motd-controls { border-radius:10px; border:1px solid var(--border); padding:10px 10px 8px; background:#fafafa; }
-    .motd-controls h4 { font-size:13px; margin-bottom:6px; }
-    .motd-row { display:flex; flex-direction:column; gap:4px; margin-bottom:8px; }
-    .motd-row input[type="text"] { border-radius:6px; width:100%; }
-    .motd-colors { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
-    .motd-color { width:22px; height:22px; border-radius:4px; border:1px solid rgba(0,0,0,.2); cursor:pointer; }
-    .motd-color.selected { outline:2px solid #fff; box-shadow:0 0 0 2px var(--primary); }
-    .motd-note { font-size:11px; color:var(--muted); margin-top:4px; }
-    .dashboard { margin-top:8px; }
-    .console-card { border-radius:12px; border:1px solid var(--border); overflow:hidden; margin-bottom:14px; }
-    .console-header { padding:8px 12px; background:#202124; color:#e8eaed; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
-    .console-body { background:var(--console-bg); padding:8px 10px 10px; max-height:260px; overflow-y:auto; font-family:Consolas,monospace; font-size:12px; color:var(--console-text); }
-    .console-line { margin-bottom:2px; white-space:pre-wrap; word-break:break-word; }
-    .console-line.system { color:var(--console-accent); }
-    .console-line.error { color:#ff6b6b; }
-    .console-input-row { display:flex; border-top:1px solid #303134; background:#171717; padding:6px 8px; gap:6px; align-items:center; }
-    .console-input-row span { color:#9aa0a6; font-family:Consolas,monospace; font-size:12px; }
-    .console-input-row input[type="text"] { flex:1; border-radius:4px; border:1px solid #303134; background:#202124; color:#e8eaed; font-family:Consolas,monospace; font-size:12px; padding:6px 8px; }
-    .console-input-row input[type="text"]:focus { border-color:var(--primary); box-shadow:none; }
-    .console-input-row button { font-size:12px; padding:6px 10px; border-radius:999px; }
-    .server-controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
-    .server-controls .btn { font-size:13px; padding-inline:14px; }
-    .limit-warning { font-size:12px; color:var(--danger); margin-left:8px; }
-  </style>
+<meta charset="UTF-8">
+<title>Home - Classroom</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
+
+/* HEADER */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #2c3e50;
+  color: white;
+  padding: 15px;
+  font-size: 20px;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header span {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* MAIN CONTENT */
+main {
+  margin-top: 90px;
+  padding: 20px;
+}
+
+/* BUTTONS */
+button {
+  padding: 12px 20px;
+  background: #3498db;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+button:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* SERVER BOX */
+.server-box {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+}
+
+/* INPUTS */
+input, select {
+  padding: 10px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+</style>
 </head>
 <body>
-  <header>
-    <div class="header-logo">C</div>
-    <div class="header-text">
-      <div class="header-title">Home - Classroom</div>
-      <div class="header-subtitle">SpyderSammy — Eaglercraft 1.12.2 hosting</div>
-    </div>
-  </header>
 
-  <main>
-    <h1 class="page-title">SpyderSammy Eaglercraft hosting</h1>
-    <p class="page-subtitle">
-      Create and manage up to two Eaglercraft 1.12.2 multiplayer servers with
-      wss://&lt;name&gt;.sammy.host.
-    </p>
-
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Your servers</div>
-          <div class="card-subtitle">You can have at most two active servers at a time.</div>
-        </div>
-        <div>
-          <button id="createServerBtn" class="btn btn-primary">+ Create server</button>
-          <span id="limitWarning" class="limit-warning" style="display:none;">Limit reached (2 / 2)</span>
-        </div>
-      </div>
-
-      <div id="emptyState" class="empty-state">
-        <h2>No servers yet</h2>
-        <p>Click “Create server” to set up your own Eaglercraft 1.12.2 multiplayer server.</p>
-        <button id="emptyCreateBtn" class="btn btn-primary">Create server</button>
-      </div>
-
-      <div id="serversGrid" class="servers-grid" style="display:none;"></div>
-    </div>
-
-    <div id="dashboardContainer"></div>
-  </main>
-
-  <div id="wizardBackdrop" class="wizard-backdrop">
-    <div class="wizard">
-      <div class="wizard-header">
-        <div class="wizard-title">Create your own Eaglercraft 1.12.2 Multiplayer server!</div>
-        <div class="wizard-subtitle">Follow the steps to name, configure, and customize your server.</div>
-        <div class="wizard-steps">
-          <div class="wizard-step" data-step="1">
-            <div class="wizard-step-indicator">1</div><span>Name</span>
-          </div>
-          <div class="wizard-step" data-step="2">
-            <div class="wizard-step-indicator">2</div><span>Version</span>
-          </div>
-          <div class="wizard-step" data-step="3">
-            <div class="wizard-step-indicator">3</div><span>Customization</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="wizard-body">
-        <div id="step1">
-          <div class="field">
-            <label for="serverNameInput">Server name</label>
-            <small>
-              This will be the name of your server and part of your
-              <code>wss://</code> address. Only lowercase letters <code>a-z</code> and <code>-</code> are allowed.
-            </small>
-            <div class="input-row">
-              <div class="input-prefix">wss://</div>
-              <input id="serverNameInput" type="text" autocomplete="off" spellcheck="false" placeholder="my-server" />
-              <div class="input-suffix">.sammy.host</div>
-            </div>
-            <div id="serverNameError" class="error-text" style="display:none;">
-              Name must be 3–32 characters, lowercase a–z and <code>-</code> only, starting with a letter.
-            </div>
-          </div>
-        </div>
-
-        <div id="step2" style="display:none;">
-          <div class="field">
-            <label>Version</label>
-            <small>Only 1.12.2 is available right now. Other versions are coming soon.</small>
-            <div class="version-grid">
-              <div class="version-card">
-                <div class="version-name">1.8.8</div>
-                <div class="version-desc">Coming soon</div>
-                <div class="version-tag">Unavailable</div>
-              </div>
-              <div class="version-card enabled selected" id="version1122Card">
-                <div class="version-name">1.12.2</div>
-                <div class="version-desc">Paper and Spigot version — optimized for Eaglercraft.</div>
-                <div class="version-tag version-tag-primary">Selected</div>
-              </div>
-              <div class="version-card">
-                <div class="version-name">1.22.10</div>
-                <div class="version-desc">Coming soon</div>
-                <div class="version-tag">Unavailable</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="step3" style="display:none;">
-          <div class="field">
-            <label>Customize your server listing</label>
-            <small>This is how your server will appear in the Eaglercraft server list. You can edit everything except the address.</small>
-            <div class="motd-layout">
-              <div class="motd-preview-card">
-                <div id="motdAddress" class="motd-line-address">example.sammy.host</div>
-                <div id="motdTitle" class="motd-line-title">An Eaglercraft Server</div>
-                <div id="motdFooter" class="motd-line-footer">Powered by SpyderSammy Eaglercraft hosting</div>
-              </div>
-              <div class="motd-controls">
-                <h4>Customize MOTD</h4>
-                <div class="motd-row">
-                  <label for="motdTitleInput">Title line</label>
-                  <input id="motdTitleInput" type="text" value="An Eaglercraft Server" />
-                </div>
-                <div class="motd-row">
-                  <label for="motdFooterInput">Footer line</label>
-                  <input id="motdFooterInput" type="text" value="Powered by SpyderSammy Eaglercraft hosting" />
-                </div>
-                <div class="motd-row">
-                  <label>Color theme</label>
-                  <div class="motd-colors" id="motdColors">
-                    <div class="motd-color selected" data-color="classic" style="background:linear-gradient(135deg,#55ffff,#ffff55,#aaaaaa);"></div>
-                    <div class="motd-color" data-color="emerald" style="background:linear-gradient(135deg,#00ff9d,#c3ff00,#aaaaaa);"></div>
-                    <div class="motd-color" data-color="nether" style="background:linear-gradient(135deg,#ff5555,#ffb86c,#aaaaaa);"></div>
-                    <div class="motd-color" data-color="end" style="background:linear-gradient(135deg,#bd93f9,#ff79c6,#aaaaaa);"></div>
-                  </div>
-                  <div class="motd-note">Only the color theme is applied. Fonts/alignment are visual only.</div>
-                </div>
-                <div class="motd-note">
-                  The server address line is locked and will be set to
-                  <code>wss://&lt;name&gt;.sammy.host</code> automatically.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="wizard-footer">
-        <button id="wizardBackBtn" class="btn btn-ghost">Back</button>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button id="wizardCancelBtn" class="btn btn-ghost">Cancel</button>
-          <button id="wizardNextBtn" class="btn btn-primary">Next</button>
-        </div>
-      </div>
-    </div>
+<header>
+  <div>
+    <strong>SpyderSammy</strong> — Eaglercraft Hosting<br>
+    <span>Multiplayer 1.12.2</span>
   </div>
+</header>
 
-  <script>
-    const API_BASE = "https://api.sammy.host"; // Railway backend (see below)
-    const MAX_SERVERS = 2;
+<main id="app">
+  <h2>No servers yet</h2>
+  <button onclick="startCreate()">Create Server</button>
+</main>
 
-    const state = {
-      servers: [],
-      activeServerId: null,
-      wizardStep: 1,
-      wizardData: {
-        name: "",
-        version: "1.12.2",
-        motdTitle: "An Eaglercraft Server",
-        motdFooter: "Powered by SpyderSammy Eaglercraft hosting",
-        motdTheme: "classic",
-      },
-    };
+<script>
+const API = "https://nodejs-production-1004.up.railway.app";
 
-    const createServerBtn = document.getElementById("createServerBtn");
-    const emptyCreateBtn = document.getElementById("emptyCreateBtn");
-    const emptyState = document.getElementById("emptyState");
-    const serversGrid = document.getElementById("serversGrid");
-    const limitWarning = document.getElementById("limitWarning");
-    const dashboardContainer = document.getElementById("dashboardContainer");
-    const wizardBackdrop = document.getElementById("wizardBackdrop");
-    const wizardBackBtn = document.getElementById("wizardBackBtn");
-    const wizardCancelBtn = document.getElementById("wizardCancelBtn");
-    const wizardNextBtn = document.getElementById("wizardNextBtn");
-    const serverNameInput = document.getElementById("serverNameInput");
-    const serverNameError = document.getElementById("serverNameError");
-    const motdAddress = document.getElementById("motdAddress");
-    const motdTitle = document.getElementById("motdTitle");
-    const motdFooter = document.getElementById("motdFooter");
-    const motdTitleInput = document.getElementById("motdTitleInput");
-    const motdFooterInput = document.getElementById("motdFooterInput");
-    const motdColors = document.getElementById("motdColors");
+/* STEP 1 — START CREATE */
+function startCreate() {
+  document.getElementById("app").innerHTML = `
+    <h2>Create your own Eaglercraft 1.12.2 Multiplayer server!</h2>
+    <h3>Step 1 — Name your server</h3>
+    <p>This will be used in your wss:// address.</p>
+    <p>wss://<strong id="previewName">yourname</strong>.sammy.host</p>
 
-    function updateServerLimitUI() {
-      const full = state.servers.length >= MAX_SERVERS;
-      createServerBtn.disabled = full;
-      emptyCreateBtn.disabled = full;
-      limitWarning.style.display = full ? "inline" : "none";
-    }
+    <input id="serverName" placeholder="server-name" oninput="validateName()">
 
-    function renderServers() {
-      if (state.servers.length === 0) {
-        emptyState.style.display = "block";
-        serversGrid.style.display = "none";
-      } else {
-        emptyState.style.display = "none";
-        serversGrid.style.display = "grid";
-      }
-      serversGrid.innerHTML = "";
-      state.servers.forEach((server) => {
-        const card = document.createElement("div");
-        card.className = "server-card";
-        const name = document.createElement("div");
-        name.className = "server-name";
-        name.textContent = server.name;
-        const address = document.createElement("div");
-        address.className = "server-address";
-        address.textContent = `wss://${server.name}.sammy.host`;
-        const meta = document.createElement("div");
-        meta.className = "server-meta";
-        meta.textContent = `Version ${server.version} • MOTD: "${server.motdTitle}"`;
-        const statusBadge = document.createElement("span");
-        statusBadge.className =
-          "badge " + (server.status === "running" ? "badge-success" : "badge-danger");
-        statusBadge.innerHTML = `<span class="badge-dot"></span>${
-          server.status === "running" ? "Running" : "Stopped"
-        }`;
-        const actions = document.createElement("div");
-        actions.className = "server-actions";
-        const openBtn = document.createElement("button");
-        openBtn.className = "btn btn-outline";
-        openBtn.textContent = "Open dashboard";
-        openBtn.onclick = () => openDashboard(server.id);
-        actions.appendChild(openBtn);
-        card.appendChild(name);
-        card.appendChild(address);
-        card.appendChild(meta);
-        card.appendChild(statusBadge);
-        card.appendChild(actions);
-        serversGrid.appendChild(card);
-      });
-      updateServerLimitUI();
-    }
+    <button id="next1" onclick="step2()" disabled>Next</button>
+  `;
+}
 
-    async function fetchServers() {
-      try {
-        const res = await fetch(`${API_BASE}/servers`);
-        const data = await res.json();
-        state.servers = data;
-        renderServers();
-      } catch (e) {
-        console.error(e);
-      }
-    }
+function validateName() {
+  let name = document.getElementById("serverName").value;
+  name = name.toLowerCase().replace(/[^a-z\-]/g, "");
+  document.getElementById("serverName").value = name;
+  document.getElementById("previewName").innerText = name || "yourname";
+  document.getElementById("next1").disabled = name.length < 3;
+}
 
-    function openDashboard(id) {
-      state.activeServerId = id;
-      const server = state.servers.find((s) => s.id === id);
-      if (!server) return;
-      dashboardContainer.innerHTML
+/* STEP 2 — VERSION */
+function step2() {
+  document.getElementById("app").innerHTML = `
+    <h3>Step 2 — Version</h3>
+
+    <button disabled>1.8.8 (coming soon)</button><br><br>
+    <button style="background:#27ae60" onclick="step3()">1.12.2 (Paper/Spigot)</button><br><br>
+    <button disabled>1.22.10 (coming soon)</button>
+  `;
+}
+
+/* STEP 3 — CUSTOMIZATION */
+function step3() {
+  const name = document.getElementById("serverName").value;
+
+  document.getElementById("app").innerHTML = `
+    <h3>Step 3 — Customize</h3>
+    <p>Your server will appear like this in Eaglercraft:</p>
+
+    <div class="server-box">
+      <strong>${name}.sammy.host</strong><br>
+      <em>Custom MOTD preview here</em>
+    </div>
+
+    <button onclick="finishCreate()">Start Server</button>
+  `;
+}
+
+/* FINAL — CREATE SERVER */
+async function finishCreate() {
+  const name = document.getElementById("serverName").value;
+
+  const res = await fetch(API + "/servers/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name,
+      version: "1.12.2",
+      motdTitle: "Welcome!",
+      motdFooter: "Hosted on SammyCraft",
+      motdTheme: "default"
+    })
+  });
+
+  const data = await res.json();
+  loadDashboard(data.id);
+}
+
+/* DASHBOARD */
+async function loadDashboard(id) {
+  const res = await fetch(API + "/servers");
+  const list = await res.json();
+  const server = list.find(s => s.id === id);
+
+  document.getElementById("app").innerHTML = `
+    <h2>Server Dashboard</h2>
+
+    <div class="server-box">
+      <strong>${server.name}.sammy.host</strong><br>
+      Status: <strong>${server.status}</strong>
+    </div>
+
+    <button onclick="startServer('${id}')">Start</button>
+    <button onclick="stopServer('${id}')">Stop</button>
+    <button onclick="restartServer('${id}')">Restart</button>
+
+    <h3>Console</h3>
+    <div id="consoleBox" style="background:white;padding:10px;height:200px;overflow:auto;border:1px solid #ccc;"></div>
+
+    <input id="cmd" placeholder="/say hello">
+    <button onclick="sendCmd('${id}')">Send</button>
+  `;
+}
+
+/* START / STOP / RESTART */
+async function startServer(id) {
+  await fetch(API + `/servers/${id}/start`, { method: "POST" });
+  loadDashboard(id);
+}
+async function stopServer(id) {
+  await fetch(API + `/servers/${id}/stop`, { method: "POST" });
+  loadDashboard(id);
+}
+async function restartServer(id) {
+  await stopServer(id);
+  setTimeout(() => startServer(id), 500);
+}
+
+/* SEND COMMAND */
+async function sendCmd(id) {
+  const cmd = document.getElementById("cmd").value;
+  await fetch(API + `/servers/${id}/command`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ command: cmd })
+  });
+  document.getElementById("cmd").value = "";
+}
+</script>
+
+</body>
+</html>
